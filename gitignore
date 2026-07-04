@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 資料庫與備份
+*.db
+*_backup.txt
+
+# 環境變數
+.env
+
+# 虛擬環境
+venv/
+ENV/
