@@ -1,7 +1,5 @@
 name: Taoyuan Real Estate Analyzer
 
-# 觸發條件：每天台灣時間早上 8:00 自動執行（UTC 00:00）
-# 也可以到 GitHub 網頁上手動點擊執行（workflow_dispatch）
 on:
   schedule:
     - cron: '0 0 * * *'
