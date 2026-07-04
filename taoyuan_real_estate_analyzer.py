@@ -17,9 +17,15 @@ RSS_FEEDS = [
     "https://www.tycg.gov.tw/cp.aspx?n=18", # 桃園市政府最新消息
 ]
 
-DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "https://discord.com/api/webhooks/1507711843714469960/HSGXH0KhBjsoxLUCLtxhW9sRV4lG2KqJXSq1pYOFIlnq4nMTalFPXMtj-veEKlR6gOhT")
-DB_PATH = "/home/ubuntu/taoyuan_news_monitor.db"
-BACKUP_PATH = "/home/ubuntu/taoyuan_reports_backup.txt"
+# 安全性修正：不再寫死 Webhook 網址，一定要從環境變數 (GitHub Secrets) 讀取
+# 如果沒有設定 Secrets，這裡會是 None，程式會印出警告而不是誤用舊網址
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+
+# 路徑修正：改用相對路徑，這樣不管在本機、GitHub Actions 或任何伺服器都能正常執行
+# os.path.dirname(__file__) 代表「這支程式檔案所在的資料夾」
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "taoyuan_news_monitor.db")
+BACKUP_PATH = os.path.join(BASE_DIR, "taoyuan_reports_backup.txt")
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -167,6 +173,7 @@ def analyze_news(articles):
 def send_to_discord(report):
     backup_report(report)
     if not DISCORD_WEBHOOK_URL:
+        print("警告：找不到 DISCORD_WEBHOOK_URL，請確認 GitHub Secrets 是否設定正確。")
         return False
     
     if len(report) > 1900:
